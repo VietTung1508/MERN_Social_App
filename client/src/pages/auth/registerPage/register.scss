@@ -1,0 +1,158 @@
+@use "../../../sass/" as *;
+
+.register {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #cad2c5;
+  overflow: hidden;
+  &__box {
+    width: 80%;
+    height: 94%;
+    display: flex;
+    align-items: center;
+    background-color: #fff;
+    position: relative;
+    border-radius: 10px;
+
+    .close-icon {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      color: #52796f;
+      cursor: pointer;
+    }
+
+    &__left {
+      width: 35%;
+      height: 100%;
+      position: relative;
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 10px 0 0 10px;
+      }
+
+      &::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(255, 255, 255, 0.1);
+      }
+    }
+
+    &__right {
+      width: 65%;
+      height: 100%;
+      padding: 1rem;
+      padding-left: 2rem;
+      background-color: #fff;
+      border-radius: 10px;
+
+      h1 {
+        margin-bottom: 15px;
+        font-weight: 800;
+      }
+
+      .ads {
+        margin-bottom: 25px;
+        font-size: 15px;
+      }
+
+      .register-link {
+        margin-bottom: 15px;
+        font-size: 13px;
+        word-spacing: 2px;
+
+        span {
+          color: #52796f;
+          cursor: pointer;
+        }
+      }
+
+      .register-form {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+
+        div {
+          width: calc(50% - 15px);
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+          margin-bottom: 15px;
+
+          .passwordInner {
+            width: 100%;
+            position: relative;
+
+            .password-visible {
+              position: absolute;
+              bottom: 30%;
+              right: 10px;
+              cursor: pointer;
+            }
+
+            input:invalid[focused="true"] ~ span {
+              position: absolute;
+              bottom: 0;
+              display: unset;
+            }
+          }
+
+          label {
+            font-size: 12px;
+            font-weight: 800;
+          }
+
+          input {
+            padding: 8px 12px;
+          }
+
+          input:invalid[focused="true"] ~ span {
+            margin-bottom: -20px;
+            display: unset;
+          }
+
+          span {
+            font-size: 13px;
+            color: #b00020;
+            bottom: -40%;
+            left: 0%;
+            display: none;
+          }
+        }
+
+        .submit {
+          width: 100%;
+          .err {
+            display: unset;
+            width: 100%;
+            color: #b00020;
+            font-size: 15px;
+            margin-top: -16px;
+          }
+
+          button {
+            width: 25%;
+            background-color: $button-background-color;
+            color: #fff;
+            font-weight: 700;
+            padding: 15px 35px;
+            border-radius: 4px;
+            border: none;
+            outline: none;
+            cursor: pointer;
+          }
+        }
+      }
+    }
+  }
+}

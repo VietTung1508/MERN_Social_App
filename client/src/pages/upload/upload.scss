@@ -1,0 +1,131 @@
+@use "../../sass/" as *;
+
+.upload {
+  display: flex;
+  justify-content: center;
+  .form-upload {
+    width: 80%;
+    height: 100%;
+    margin: 1rem 0 3rem 0;
+    display: flex;
+    border-radius: 20px;
+    background-color: rgba(255, 255, 255, 0.1);
+    .upload-img-wrapper {
+      width: 40%;
+      padding: 1rem;
+      height: 100%;
+      border-radius: 20px;
+
+      .upload-noImage {
+        margin: 0 auto;
+        width: 90%;
+        height: 500px;
+        background-color: rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 20px;
+
+        .inp-image {
+          width: 70px;
+        }
+
+        h3 {
+          color: $text-color;
+        }
+      }
+
+      .post-image {
+        width: 100%;
+        padding: 3rem 0;
+        background-color: rgba(255, 255, 255, 0.2);
+        border-radius: 10px;
+      }
+
+      .delete-icon {
+        margin-top: 10px;
+        margin-left: 10px;
+        color: #fff;
+        transform: scale(1.5);
+        padding: 7px 8px;
+        border-radius: 50%;
+        transition: 0.3s ease;
+        &:hover {
+          background-color: rgba(255, 255, 255, 0.3);
+        }
+      }
+    }
+    .upload-info {
+      width: 60%;
+      display: flex;
+      flex-direction: column;
+      gap: 40px;
+      padding: 3rem 1rem;
+
+      input {
+        width: 80%;
+        border: none;
+        outline: none;
+        background-color: transparent;
+        color: $text-color;
+        font-weight: 800;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+        transition: 0.3s ease-in-out;
+
+        &:focus {
+          border-bottom: 1px solid rgba(255, 255, 255, 0.8);
+        }
+      }
+
+      .upload-author {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        .avatar {
+          background-color: $avatar-background-color;
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          color: $text-color;
+        }
+        .author-username {
+          color: $text-color;
+        }
+      }
+
+      .inp-title {
+        padding-bottom: 6px;
+        font-size: 35px;
+      }
+      .inp-content {
+        padding-left: 10px;
+        padding-bottom: 15px;
+        font-size: 20px;
+      }
+      .inp-category {
+        padding-bottom: 15px;
+        font-size: 20px;
+      }
+
+      .btn-upload {
+        width: 20%;
+        padding: 10px 0;
+        border-radius: 8px;
+        color: $text-color;
+        background-color: $button-background-color;
+        transition: all 0.3s ease;
+        cursor: pointer;
+
+        &:hover {
+          background-color: $button-background-color-hover;
+        }
+      }
+    }
+  }
+}

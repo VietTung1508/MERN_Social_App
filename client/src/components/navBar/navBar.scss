@@ -1,0 +1,94 @@
+@use "../../sass/" as *;
+
+.navBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 8px;
+  margin-bottom: 20px;
+  &__search {
+    background-color: $main-color;
+    width: 35%;
+    display: flex;
+    align-items: center;
+    border: 1.5px solid $sidebar-color;
+    border-radius: 30px;
+
+    .search-box {
+      padding: 0px 10px;
+      width: 100%;
+
+      input {
+        width: 90%;
+        background-color: transparent;
+        outline: none;
+        border: none;
+        padding: 8px 0;
+        color: $text-color;
+      }
+    }
+    .btn-search {
+      width: 15%;
+      color: $text-color;
+      outline: none;
+      border: none;
+      background-color: $sidebar-color;
+      padding: 8px 0;
+      border-left: 1.5px solid rgba(255, 255, 255, 0.2);
+      border-top-right-radius: 30px;
+      border-bottom-right-radius: 30px;
+      cursor: pointer;
+    }
+  }
+
+  &__action {
+    width: 30%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 20px;
+    margin-right: 1rem;
+    .avatar {
+      background-color: $avatar-background-color;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+
+      span {
+        color: $text-color;
+        font-weight: 700;
+        -moz-user-select: none;
+        -khtml-user-select: none;
+        -webkit-user-select: none;
+      }
+    }
+
+    .btn-upload {
+      background-color: transparent;
+      color: #fff;
+      border: none;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .btn-login {
+      background-color: $button-background-color;
+      padding: 10px 16px;
+      border-radius: 4px;
+      font-weight: 700;
+      cursor: pointer;
+      color: #fff;
+      border: none;
+      outline: none;
+      transition: 0.2s ease-in-out;
+
+      &:hover {
+        opacity: 0.8;
+      }
+    }
+  }
+}

@@ -1,0 +1,122 @@
+@use "../../../sass/" as *;
+
+.login {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background-color: #cad2c5;
+
+  &__box {
+    width: 80%;
+    height: 94%;
+    display: flex;
+    background-color: #fff;
+    position: relative;
+    border-radius: 10px;
+
+    .close-icon {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      color: #52796f;
+      cursor: pointer;
+    }
+
+    &__left {
+      width: 35%;
+      height: 100%;
+      position: relative;
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 10px 0 0 10px;
+      }
+      &::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(255, 255, 255, 0.1);
+      }
+    }
+    &__right {
+      width: 65%;
+      height: 100%;
+      padding: 2rem;
+      background-color: #fff;
+      border-radius: 10px;
+      h1 {
+        margin-bottom: 15px;
+        font-weight: 800;
+      }
+
+      .login-link {
+        margin-bottom: 1.8rem;
+        font-size: 13px;
+        word-spacing: 2px;
+
+        span {
+          color: #52796f;
+          cursor: pointer;
+        }
+      }
+
+      .login-form {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 15px;
+
+        div {
+          width: 100%;
+          display: flex;
+          flex-direction: column;
+          gap: 15px;
+          position: relative;
+          margin-bottom: 5px;
+
+          .password-visible {
+            position: absolute;
+            bottom: 15%;
+            right: 10px;
+            cursor: pointer;
+          }
+
+          label {
+            font-size: 12px;
+            font-weight: 800;
+          }
+
+          input {
+            padding: 8px 12px;
+          }
+        }
+
+        .err {
+          width: 100%;
+          color: #b00020;
+        }
+
+        button {
+          width: 100%;
+          background-color: $button-background-color;
+          color: #fff;
+          font-weight: 700;
+          padding: 15px 35px;
+          border-radius: 4px;
+          margin-top: 10px;
+          border: none;
+          outline: none;
+          cursor: pointer;
+        }
+      }
+    }
+  }
+}

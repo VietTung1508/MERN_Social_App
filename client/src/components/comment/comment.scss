@@ -1,0 +1,199 @@
+@use "../../sass/" as *;
+
+.comment {
+  width: 100%;
+  margin: 20px 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  &__avatar {
+    width: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 35px;
+    border-radius: 50%;
+    background-color: $avatar-background-color;
+    cursor: pointer;
+    color: $text-color;
+  }
+  &__info {
+    width: 90%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    &__user {
+      .comment-username {
+        font-size: 14px;
+        font-weight: 800;
+      }
+      .comment-content {
+        padding-left: 8px;
+        font-size: 14px;
+        color: rgba(255, 255, 255, 0.8);
+      }
+    }
+    &__action {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      .time {
+        color: rgba(255, 255, 255, 0.6);
+      }
+      .reply {
+        cursor: pointer;
+        color: rgba(255, 255, 255, 0.6);
+      }
+
+      .likeCount {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        color: rgba(255, 255, 255, 0.6);
+
+        span {
+          cursor: pointer;
+        }
+      }
+
+      .actions-wrapper {
+        position: relative;
+        .actions-icon {
+          cursor: pointer;
+          color: rgba(255, 255, 255, 0.6);
+        }
+        .actions-list {
+          display: none;
+          position: absolute;
+          top: 100%;
+          left: -350%;
+          background-color: black;
+          padding: 0.7rem;
+          border-radius: 7px;
+          z-index: 1;
+          .action-item {
+            display: flex;
+            align-items: center;
+            border-radius: 4px;
+            gap: 15px;
+            cursor: pointer;
+            color: rgba(255, 255, 255, 0.6);
+            padding: 0.7rem;
+            transition: 0.2s ease;
+
+            &:hover {
+              background-color: rgba(255, 255, 255, 0.3);
+            }
+          }
+          &.active {
+            display: unset;
+          }
+        }
+      }
+    }
+    .replyForm {
+      display: none;
+
+      .reply-inp {
+        max-width: 80%;
+        height: 70px;
+        resize: none;
+        padding: 5px;
+        background-color: transparent;
+        color: #fff;
+        border-radius: 8px;
+      }
+
+      .reply-action {
+        width: 80%;
+        resize: none;
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+
+        button {
+          padding: 5px 8px;
+          border-radius: 30px;
+          border: none;
+          outline: none;
+          cursor: pointer;
+        }
+
+        .btn-cancle {
+          background-color: transparent;
+          color: $text-color;
+        }
+        .btn-reply {
+          background-color: rgba(255, 255, 255, 0.3);
+
+          &.active {
+            background-color: $button-background-color;
+            color: $text-color;
+          }
+        }
+      }
+
+      &.active {
+        display: unset;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+    }
+
+    .editForm {
+      display: none;
+
+      .edit-inp {
+        max-width: 80%;
+        height: 70px;
+        resize: none;
+        padding: 5px;
+        background-color: transparent;
+        color: #fff;
+        border-radius: 8px;
+      }
+
+      .edit-action {
+        width: 80%;
+        resize: none;
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+
+        button {
+          padding: 5px 8px;
+          border-radius: 30px;
+          border: none;
+          outline: none;
+          cursor: pointer;
+        }
+
+        .btn-cancle {
+          background-color: transparent;
+          color: $text-color;
+        }
+        .btn-edit {
+          background-color: rgba(255, 255, 255, 0.3);
+
+          &.active {
+            background-color: $button-background-color;
+            color: $text-color;
+          }
+        }
+      }
+
+      &.active {
+        display: unset;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+    }
+
+    .childComments {
+      margin: -10px 0;
+    }
+  }
+}
