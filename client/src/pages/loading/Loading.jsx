@@ -5,13 +5,15 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 function Loading(props) {
   const isUpload = props.isUpload;
   const isDelete = props.isDelete;
+  const isUpdated = props.isUpdated;
   return (
     <div className="loading">
       <div className="loading__message">
         <FontAwesomeIcon icon={faCircleNotch} className="spinner" />
         <h1>
-          Please wait for {isUpload || isDelete ? "post" : "website"} to{" "}
-          {isDelete ? "delete" : "load"}....
+          Please wait for{" "}
+          {isUpload || isDelete ? "post" : isUpdated ? "profile" : "website"} to{" "}
+          {isDelete ? "delete" : isUpdated ? "update" : "load"}....
         </h1>
       </div>
     </div>

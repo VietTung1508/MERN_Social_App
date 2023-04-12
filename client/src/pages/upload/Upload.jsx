@@ -18,7 +18,7 @@ function Upload() {
   const [isLoading, setIsLoading] = useState(false);
 
   const navigate = useNavigate();
-  const user = useSelector((state) => state.user.user);
+  const user = useSelector((state) => state.user);
 
   useEffect(() => {
     return () => {

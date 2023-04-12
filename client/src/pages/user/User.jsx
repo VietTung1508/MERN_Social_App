@@ -1,7 +1,7 @@
 import "./user.scss";
 import { useEffect, useState } from "react";
 import axiosClient from "../../api/axiosClient";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import Masonary from "../../components/masonary/Masonary";
 import { useSelector } from "react-redux";
 
@@ -10,7 +10,7 @@ function User() {
   const [createdPin, setcreatedPin] = useState(true);
   const { userId } = useParams();
 
-  const currentUser = useSelector((state) => state.user.user);
+  const currentUser = useSelector((state) => state.user);
 
   useEffect(() => {
     const getUser = async () => {
@@ -34,7 +34,7 @@ function User() {
         <div className="user">
           {user.avatar ? (
             <div className="user-avatar">
-              <img src={user.avatar.url} alt="" />
+              <img src={user.avatar.url} alt="" draggable="false" />
             </div>
           ) : (
             <div className="user-anonymous-avatar">
@@ -46,7 +46,9 @@ function User() {
             <p className="email">{user.email}</p>
             <div className="user-actions">
               {currentUser.user._id === user._id ? (
-                <button>Edit Profile</button>
+                <Link to="/profileSetting">
+                  <button>Edit Profile</button>
+                </Link>
               ) : (
                 <button>Follow</button>
               )}

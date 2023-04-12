@@ -11,6 +11,9 @@ const Following = lazy(() => import("../pages/following/Following"));
 const User = lazy(() => import("../pages/user/User"));
 const Upload = lazy(() => import("../pages/upload/Upload"));
 const Login = lazy(() => import("../pages/auth/loginPage/Login"));
+const ProfileSetting = lazy(() =>
+  import("../pages/profileSetting/ProfileSetting")
+);
 const Register = lazy(() => import("../pages/auth/registerPage/Register"));
 
 const routes = [
@@ -47,6 +50,15 @@ const routes = [
     element: (
       <ProtectedRoute>
         <User />
+      </ProtectedRoute>
+    ),
+    layout: "Default",
+  },
+  {
+    path: "/profileSetting",
+    element: (
+      <ProtectedRoute>
+        <ProfileSetting />
       </ProtectedRoute>
     ),
     layout: "Default",

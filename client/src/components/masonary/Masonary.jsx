@@ -9,7 +9,7 @@ function Masonary(props) {
   const savePin = props.savePin;
   const user = props.user;
   const [posts, setPosts] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   let shuffledPosts = null;
 
@@ -21,7 +21,6 @@ function Masonary(props) {
   }
 
   useEffect(() => {
-    setLoading(true);
     const getPosts = async () => {
       try {
         let res;
@@ -35,19 +34,18 @@ function Masonary(props) {
         } else {
           res = await axiosClient.get(`posts/`);
         }
-
         setPosts(res.data);
         setLoading(false);
       } catch (e) {
         console.log(e);
+        setLoading(false);
       }
     };
     getPosts();
   }, [category, user]);
 
   return (
-    <div className="masonary">
-      <h1>{loading && "Loading..."}</h1>
+    <div className={`masonary ${loading ? "active" : ""}`}>
       {savePin
         ? savePin.map((post, i) => <Pin data={post} key={i} />)
         : shuffledPosts &&

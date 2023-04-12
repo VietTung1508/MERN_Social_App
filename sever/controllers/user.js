@@ -34,7 +34,30 @@ const savePin = async (req, res) => {
   }
 };
 
+const edit = async (req, res) => {
+  const { userId } = req.params;
+  const userUpdate = req.body;
+  try {
+    const avatar = {
+      url: req.file.path,
+      filename: req.file.filename,
+    };
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      {
+        avatar: avatar,
+        ...userUpdate,
+      },
+      { new: true }
+    );
+    res.status(200).json(updatedUser);
+  } catch (e) {
+    res.status(500).json(e);
+  }
+};
+
 module.exports = {
   getUser,
   savePin,
+  edit,
 };

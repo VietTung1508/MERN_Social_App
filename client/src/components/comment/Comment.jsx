@@ -15,7 +15,7 @@ import { Link } from "react-router-dom";
 
 function Comment(props) {
   const [formComment, setFormComment] = useState("");
-  const user = useSelector((state) => state.user.user);
+  const user = useSelector((state) => state.user);
 
   const activeComment = props.activeComment;
   const setActiveComment = props.setActiveComment;
@@ -98,9 +98,15 @@ function Comment(props) {
   return (
     <div className="comment">
       <Link to={`/user/${comment.author._id}`}>
-        <div className="comment__avatar">
-          <span>{comment.author.username[0].toUpperCase()}</span>
-        </div>
+        {comment.author.avatar ? (
+          <div className="comment__avatar">
+            <img src={comment.author.avatar.url} alt="" draggable="false" />
+          </div>
+        ) : (
+          <div className="comment__anonymous-avatar">
+            <span>{comment.author.username[0].toUpperCase()}</span>
+          </div>
+        )}
       </Link>
       <div className="comment__info">
         <div className="comment__info__user">

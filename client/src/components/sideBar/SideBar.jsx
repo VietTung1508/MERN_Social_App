@@ -5,6 +5,8 @@ import { faUser } from "@fortawesome/free-regular-svg-icons";
 import { Link, useLocation } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { setSideBar } from "../../redux/modeSlice";
+import { useState, useEffect } from "react";
+import axiosClient from "../../api/axiosClient";
 
 const pages = [
   {
@@ -24,51 +26,23 @@ const pages = [
   },
 ];
 
-const categories = [
-  {
-    img: "https://i.pinimg.com/474x/23/dd/93/23dd932e24c1709f5f69710a19ad819c.jpg",
-    cate: "Cars",
-  },
-  {
-    img: "https://i.pinimg.com/474x/42/72/e1/4272e100cfbabbbd64c20ae1a111726a.jpg",
-    cate: "Anime",
-  },
-  {
-    img: "https://i.pinimg.com/474x/dd/97/62/dd97627217ce79e5ae7afe13428c1c99.jpg",
-    cate: "Japan",
-  },
-  {
-    img: "https://i.pinimg.com/474x/b5/3e/1c/b53e1c921aca9e6a105a8e1bb5e0bd7f.jpg",
-    cate: "Nature",
-  },
-  {
-    img: "https://i.pinimg.com/474x/e2/fd/29/e2fd291b8d860f5de90fbfc195edfe44.jpg",
-    cate: "Gaming",
-  },
-
-  {
-    img: "https://i.pinimg.com/474x/16/38/44/163844c229331ee646efb57779f85a5f.jpg",
-    cate: "Animal",
-  },
-
-  {
-    img: "https://i.pinimg.com/474x/6d/e8/9c/6de89c703f7ee7057ec94f846d1e352e.jpg",
-    cate: "Rock",
-  },
-  {
-    img: "https://i.pinimg.com/474x/6d/e8/9c/6de89c703f7ee7057ec94f846d1e352e.jpg",
-    cate: "Rock",
-  },
-  {
-    img: "https://i.pinimg.com/474x/6d/e8/9c/6de89c703f7ee7057ec94f846d1e352e.jpg",
-    cate: "Rock",
-  },
-];
-
 function SideBar() {
+  const [categories, setCategories] = useState(null);
   const { pathname } = useLocation();
   const sidebar = useSelector((state) => state.mode.sideBar);
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    const getCategories = async () => {
+      try {
+        const res = await axiosClient.get("categories/");
+        setCategories(res.data);
+      } catch (e) {
+        console.log(e);
+      }
+    };
+    getCategories();
+  }, []);
 
   const handleSidebar = () => {
     dispatch(setSideBar());
@@ -105,14 +79,18 @@ function SideBar() {
       </div>
       <div className="sidebar__categories">
         <h4 className="sidebar__categories__title">Discovery Categories</h4>
-        {categories.map((category, id) => (
-          <Link to={`/?category=${category.cate.toLowerCase()}`} key={id}>
-            <div className="sidebar__categories__category">
-              <img className="cate-img" src={category.img} />
-              <h4 className="cate-title">{category.cate}</h4>
-            </div>
-          </Link>
-        ))}
+        {categories &&
+          categories.map((category, id) => (
+            <Link to={`/?category=${category.category.toLowerCase()}`} key={id}>
+              <div className="sidebar__categories__category">
+                <img className="cate-img" src={category.image.url} alt="" />
+                <h4 className="cate-title">
+                  {category.category[0].toUpperCase() +
+                    category.category.slice(1)}
+                </h4>
+              </div>
+            </Link>
+          ))}
       </div>
     </div>
   );

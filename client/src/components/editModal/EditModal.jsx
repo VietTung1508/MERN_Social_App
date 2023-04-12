@@ -15,7 +15,6 @@ function EditModal(props) {
     content: post.content,
     category: post.category,
     author: post.author,
-    image: post.image,
   });
   const [loading, setLoading] = useState(false);
 

@@ -20,6 +20,22 @@ const getPosts = async (req, res) => {
   }
 };
 
+const searchPost = async (req, res) => {
+  const { q } = req.query;
+  console.log(q);
+  try {
+    const searchPost = await Post.find({
+      $or: [{ title: new RegExp(q, "i") }, { category: new RegExp(q, "i") }],
+    })
+      .populate("author")
+      .limit(5);
+    console.log(searchPost);
+    res.status(200).json(searchPost);
+  } catch (e) {
+    res.status(500).json(e);
+  }
+};
+
 const detail = async (req, res) => {
   const { id } = req.params;
   try {
@@ -81,6 +97,10 @@ const destroy = async (req, res) => {
   const { id } = req.params;
   try {
     const post = await Post.findById(id);
+    const isLastCategory = await Post.find({ category: post.category });
+    if (isLastCategory.length === 1) {
+      await Category.findOneAndDelete({ category: post.category });
+    }
     await cloudinary.uploader.destroy(post.image.filename);
     await Post.findByIdAndDelete(id);
     res.status(200).json({ msg: "delete Successfully" });
@@ -92,6 +112,7 @@ const destroy = async (req, res) => {
 module.exports = {
   getPosts,
   detail,
+  searchPost,
   createPost,
   update,
   destroy,

@@ -1,0 +1,16 @@
+@use "../../sass/" as *;
+
+.search-item {
+  display: flex;
+  .search-item-img {
+    width: 20%;
+    img {
+      width: 100%;
+      object-fit: cover;
+    }
+  }
+
+  .search-item-info {
+    width: 70%;
+  }
+}

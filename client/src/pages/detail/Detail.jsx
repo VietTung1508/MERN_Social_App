@@ -18,7 +18,7 @@ import EditModal from "../../components/editModal/EditModal";
 function Detail() {
   const { id } = useParams();
   const [post, setPost] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [comment, setComment] = useState("");
   const [newComment, setNewComment] = useState(false);
   const [activeComment, setActiveComment] = useState(null);
@@ -29,11 +29,18 @@ function Detail() {
     id: null,
   });
   const [update, setUpdate] = useState(false);
-
-  const user = useSelector((state) => state.user.user);
+  const [savePin, setSavePin] = useState(null);
+  const [isSaved, setIsSaved] = useState(false);
 
   useEffect(() => {
-    setLoading(true);
+    if (savePin && post) {
+      setIsSaved(savePin.some((el) => el._id === post._id));
+    }
+  }, [savePin, post]);
+
+  const user = useSelector((state) => state.user);
+
+  useEffect(() => {
     const getPost = async () => {
       try {
         const res = await axiosClient.get(`posts/${id}`);
@@ -50,6 +57,20 @@ function Detail() {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [id]);
+
+  useEffect(() => {
+    if (!user) return;
+    const getUser = async () => {
+      try {
+        const res = await axiosClient.get(`users/${user.user._id}`);
+        setSavePin(res.data.savedPin);
+      } catch (e) {
+        console.log(e);
+      }
+    };
+
+    getUser();
+  }, [id, user]);
 
   const handleSubmitComment = async (e) => {
     const cmt = comment;
@@ -83,7 +104,7 @@ function Detail() {
   const handleSavePin = async (e) => {
     try {
       await axiosClient.post(`users/${post._id}`, { userId: user.user._id });
-      setNewComment(!newComment);
+      setIsSaved(!isSaved);
     } catch (e) {
       console.log(e);
     }
@@ -92,6 +113,8 @@ function Detail() {
   const handleComment = (e) => {
     setComment(e.target.value);
   };
+
+  console.log(post);
 
   return (
     <div className="wrapper">
@@ -134,7 +157,7 @@ function Detail() {
               <img className="post-img" src={post.image.url} alt="" />
             </div>
             <div className="post-info">
-              {user && (
+              {user ? (
                 <div className="post-action">
                   <div className="icons">
                     {user.user._id === post.author._id && (
@@ -154,11 +177,30 @@ function Detail() {
                       />
                     </a>
                   </div>
-                  <button className="btn-save" onClick={handleSavePin}>
-                    Save
+                  <button
+                    className={`btn-save ${isSaved ? "saved" : ""}`}
+                    onClick={handleSavePin}
+                  >
+                    {isSaved ? "Saved" : "Save"}
                   </button>
                 </div>
+              ) : (
+                <div className="post-action">
+                  <div className="icons">
+                    <a href={post.image.url}>
+                      <FontAwesomeIcon
+                        icon={faMagnifyingGlass}
+                        className="post-icon
+                  "
+                      />
+                    </a>
+                  </div>
+                  <h3>
+                    Log In to save this Pin! <Link to="/login">Log In</Link>
+                  </h3>
+                </div>
               )}
+
               <div className="content">
                 <h1 className="post-title">{post.title}</h1>
 
@@ -167,9 +209,19 @@ function Detail() {
               <div className="post-user">
                 <div className="user-info">
                   <Link to={`/user/${post.author._id}`}>
-                    <div className="post-avatar">
-                      <span>{post.author.username[0].toUpperCase()}</span>
-                    </div>
+                    {post.author.avatar ? (
+                      <div className="post-avatar">
+                        <img
+                          src={post.author.avatar.url}
+                          alt=""
+                          draggable="false"
+                        />
+                      </div>
+                    ) : (
+                      <div className="post-anonymous-avatar">
+                        <span>{post.author.username[0].toUpperCase()}</span>
+                      </div>
+                    )}
                   </Link>
                   <div>
                     <Link to={`/user/${post.author._id}`}>
@@ -194,9 +246,19 @@ function Detail() {
                 </h3>
                 {user && (
                   <div className="comments__action">
-                    <div className="user-avatar">
-                      {user.user.username[0].toUpperCase()}
-                    </div>
+                    {user.user.avatar ? (
+                      <div className="user-avatar">
+                        <img
+                          src={user.user.avatar.url}
+                          alt=""
+                          draggable="false"
+                        />
+                      </div>
+                    ) : (
+                      <div className="user-anonymous-avatar">
+                        <span>{user.user.username[0].toUpperCase()}</span>
+                      </div>
+                    )}
                     <div className="comment-wrapper">
                       <input
                         className="comment-inp"
