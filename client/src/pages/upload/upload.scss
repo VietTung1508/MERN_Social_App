@@ -29,7 +29,12 @@
         gap: 20px;
 
         .inp-image {
-          width: 70px;
+          display: none;
+        }
+
+        .upload-icon {
+          color: #fff;
+          font-size: 40px;
         }
 
         h3 {

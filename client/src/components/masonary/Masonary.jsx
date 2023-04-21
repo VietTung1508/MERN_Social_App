@@ -1,17 +1,77 @@
 import Pin from "../pin/Pin";
 import "./masonary.scss";
 import axiosClient from "../../api/axiosClient";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import React from "react";
+import { useSelector } from "react-redux";
+import { useLocation } from "react-router-dom";
+import queryString from "query-string";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCircleNotch } from "@fortawesome/free-solid-svg-icons";
 
 function Masonary(props) {
   const category = props.category;
   const savePin = props.savePin;
   const user = props.user;
+  const followingPin = props.following;
+  const followPage = props.followPage;
+  const location = useLocation();
   const [posts, setPosts] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [savedPin, setSavdPin] = useState(null);
+  const [pageNumber, setPageNumber] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
+  const [loading, setLoading] = useState(false);
 
-  let shuffledPosts = null;
+  const currentUser = useSelector((state) => {
+    if (state.user.user === null) {
+      return state.user.user;
+    } else if (state.user.user !== null && !state.user.user.user) {
+      return state.user.user;
+    } else {
+      return state.user.user.user;
+    }
+  });
+
+  const sidebar = useSelector((state) => state.mode.sideBar);
+
+  const { q } = queryString.parse(location.search);
+
+  const observer = useRef();
+
+  const lastPin = useCallback(
+    (node) => {
+      if (loading) return;
+      if (observer.current) observer.current.disconnect();
+      observer.current = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting && hasMore) {
+          setPageNumber((prevPageNumber) => prevPageNumber + 1);
+        }
+      });
+      if (node) observer.current.observe(node);
+    },
+    [loading, hasMore]
+  );
+
+  useEffect(() => {
+    setPageNumber(0);
+    setPosts([]);
+  }, [category, q, followingPin]);
+
+  useEffect(() => {
+    if (!currentUser) return;
+    const getUser = async () => {
+      try {
+        const res = await axiosClient.get(`users/${currentUser._id}`);
+        setSavdPin(res.data.savedPin);
+      } catch (e) {
+        console.log(e);
+      }
+    };
+
+    getUser();
+  }, [currentUser]);
+
+  let shuffledPosts;
 
   if (posts) {
     shuffledPosts = posts
@@ -21,20 +81,34 @@ function Masonary(props) {
   }
 
   useEffect(() => {
+    setLoading(true);
     const getPosts = async () => {
       try {
         let res;
-
         if (category) {
           res = await axiosClient.get(
-            `posts/?category=${category.toLowerCase()}`
+            `posts/?category=${category.toLowerCase()}&pageNumber=${pageNumber}`
           );
         } else if (user) {
-          res = await axiosClient.get(`posts/?userId=${user._id}`);
+          res = await axiosClient.get(
+            `posts/?userId=${user._id}&pageNumber=${pageNumber}`
+          );
+        } else if (followingPin) {
+          res = await axiosClient.post(
+            `posts/following?pageNumber=${pageNumber}`,
+            {
+              author: followingPin,
+            }
+          );
+        } else if (q) {
+          res = await axiosClient.get(
+            `posts/search?q=${q}&limit=${false}&pageNumber=${pageNumber}`
+          );
         } else {
-          res = await axiosClient.get(`posts/`);
+          res = await axiosClient.get(`posts/?pageNumber=${pageNumber}`);
         }
-        setPosts(res.data);
+        setPosts((pre) => [...pre, ...res.data]);
+        setHasMore(res.data.length > 0);
         setLoading(false);
       } catch (e) {
         console.log(e);
@@ -42,15 +116,34 @@ function Masonary(props) {
       }
     };
     getPosts();
-  }, [category, user]);
+  }, [category, user, followingPin, q, pageNumber]);
 
   return (
-    <div className={`masonary ${loading ? "active" : ""}`}>
-      {savePin
-        ? savePin.map((post, i) => <Pin data={post} key={i} />)
-        : shuffledPosts &&
-          shuffledPosts.map((post, i) => <Pin data={post} key={i} />)}
-    </div>
+    <>
+      <div
+        className={`masonary ${followPage && "followPage"} ${
+          !sidebar && "noSidebar"
+        }`}
+      >
+        {savePin
+          ? savePin.map((post, i) => (
+              <Pin data={post} key={i} savedPin={savedPin} />
+            ))
+          : shuffledPosts &&
+            shuffledPosts.map((post, i) => (
+              <Pin
+                refData={shuffledPosts.length === i + 1 && lastPin}
+                data={post}
+                key={i}
+              />
+            ))}
+      </div>
+      {loading && (
+        <div className="loading_pin">
+          <FontAwesomeIcon icon={faCircleNotch} className="loading-icon" />
+        </div>
+      )}
+    </>
   );
 }
 

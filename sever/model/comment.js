@@ -9,6 +9,8 @@ const childCommentSchema = new Schema(
       ref: "User",
       required: [true, "Author is required"],
     },
+    like: { type: Number, default: 0 },
+    userLike: [{ type: Schema.Types.ObjectId, ref: "User" }],
     content: { type: String, required: [true, "Content is required"] },
   },
   {
@@ -26,6 +28,8 @@ const commentSchema = new Schema(
       required: [true, "Author is required"],
     },
     content: { type: String, required: [true, "Content is required"] },
+    like: { type: Number, default: 0 },
+    userLike: [{ type: Schema.Types.ObjectId, ref: "User" }],
     childComments: [childCommentSchema],
   },
   { timestamps: true }

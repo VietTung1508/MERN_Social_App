@@ -2,7 +2,7 @@ import { Fragment, useEffect, useState } from "react";
 import "./upload.scss";
 import { useSelector } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTrashCan } from "@fortawesome/free-solid-svg-icons";
+import { faCircleArrowUp, faTrashCan } from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Loading from "../loading/Loading";
@@ -18,7 +18,15 @@ function Upload() {
   const [isLoading, setIsLoading] = useState(false);
 
   const navigate = useNavigate();
-  const user = useSelector((state) => state.user);
+  const user = useSelector((state) => {
+    if (state.user.user === null) {
+      return state.user.user;
+    } else if (state.user.user !== null && !state.user.user.user) {
+      return state.user.user;
+    } else {
+      return state.user.user.user;
+    }
+  });
 
   useEffect(() => {
     return () => {
@@ -45,7 +53,7 @@ function Upload() {
     data.append("content", value.content);
     data.append("category", value.category.toLowerCase());
     try {
-      await axios.post(`http://localhost:5000/posts/${user.user._id}`, data, {
+      await axios.post(`http://localhost:5000/posts/${user._id}`, data, {
         "content-type": "multipart/form-data",
       });
       setIsLoading(false);
@@ -68,16 +76,23 @@ function Upload() {
         >
           <div className="upload-img-wrapper">
             {!postImage ? (
-              <div className="upload-noImage">
+              <label htmlFor="image" className="upload-noImage">
                 <input
                   type="file"
                   className="inp-image"
                   name="image"
+                  id="image"
                   onInput={handlePreImage}
                   required
                 />
-                <h3>Click on to preview image !</h3>
-              </div>
+                <label htmlFor="image">
+                  <FontAwesomeIcon
+                    className="upload-icon"
+                    icon={faCircleArrowUp}
+                  />
+                </label>
+                <h3>Click on to upload image !</h3>
+              </label>
             ) : (
               <Fragment>
                 <img src={postImage} alt="" className="post-image" />
@@ -104,9 +119,9 @@ function Upload() {
             />
             <div className="upload-author">
               <div className="avatar">
-                <span>{user && user.user.username[0]}</span>
+                <span>{user && user.username[0]}</span>
               </div>
-              <h4 className="author-username">{user && user.user.username}</h4>
+              <h4 className="author-username">{user && user.username}</h4>
             </div>
             <input
               type="text"

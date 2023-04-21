@@ -8,6 +8,7 @@ const upload = multer({ storage });
 route.get("/", postControllers.getPosts);
 route.get("/search", postControllers.searchPost);
 route.get("/:id", postControllers.detail);
+route.post("/following", postControllers.getFollowingPin);
 route.post("/:userId", upload.single("image"), postControllers.createPost);
 route.put("/:id", postControllers.update);
 route.delete("/:id", postControllers.destroy);

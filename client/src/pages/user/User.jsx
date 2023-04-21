@@ -8,9 +8,25 @@ import { useSelector } from "react-redux";
 function User() {
   const [user, setUser] = useState(null);
   const [createdPin, setcreatedPin] = useState(true);
+  const [following, setFollowing] = useState(null);
+  const [isFollowed, setIsFollowed] = useState(false);
   const { userId } = useParams();
 
-  const currentUser = useSelector((state) => state.user);
+  const currentUser = useSelector((state) => {
+    if (state.user.user === null) {
+      return state.user.user;
+    } else if (state.user.user !== null && !state.user.user.user) {
+      return state.user.user;
+    } else {
+      return state.user.user.user;
+    }
+  });
+
+  useEffect(() => {
+    if (following && user) {
+      setIsFollowed(following.some((el) => el._id === user._id));
+    }
+  }, [following, user]);
 
   useEffect(() => {
     const getUser = async () => {
@@ -28,10 +44,35 @@ function User() {
     };
   }, [userId]);
 
+  useEffect(() => {
+    if (!currentUser) return;
+    const getUser = async () => {
+      try {
+        const res = await axiosClient.get(`users/${currentUser._id}`);
+        setFollowing(res.data.following);
+      } catch (e) {
+        console.log(e);
+      }
+    };
+
+    getUser();
+  }, [currentUser]);
+
+  const handleFollow = async () => {
+    try {
+      await axiosClient.post(`users/follow/${user._id}`, {
+        userId: currentUser._id,
+      });
+      setIsFollowed(!isFollowed);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
   return (
-    <div className="userPage container">
+    <div className="userPage">
       {user && (
-        <div className="user">
+        <div className="user ">
           {user.avatar ? (
             <div className="user-avatar">
               <img src={user.avatar.url} alt="" draggable="false" />
@@ -44,13 +85,19 @@ function User() {
           <div className="user-info">
             <h1 className="username">{user.username}</h1>
             <p className="email">{user.email}</p>
+            <p className="introduction">{user.introduction}</p>
             <div className="user-actions">
-              {currentUser.user._id === user._id ? (
+              {currentUser._id === user._id ? (
                 <Link to="/profileSetting">
                   <button>Edit Profile</button>
                 </Link>
               ) : (
-                <button>Follow</button>
+                <button
+                  onClick={handleFollow}
+                  className={`btn-follow ${isFollowed && "active"}`}
+                >
+                  {isFollowed ? "Followed" : "Follow"}
+                </button>
               )}
             </div>
             <div className="user-filter-pin">

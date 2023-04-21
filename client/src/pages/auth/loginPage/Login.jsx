@@ -33,14 +33,14 @@ function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    dispatch(loginStart);
+    dispatch(loginStart());
     try {
       const res = await axiosClient.post("auth/login", credentials);
       dispatch(loginSuccess({ user: res.data, token: res.data.accessToken }));
       navigate("/");
     } catch (e) {
       setErr(e.response.data.message);
-      dispatch(loginFailure);
+      dispatch(loginFailure());
     }
   };
 

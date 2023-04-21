@@ -6,8 +6,9 @@ import {
   faHeart,
   faTrashCan,
 } from "@fortawesome/free-solid-svg-icons";
+import { faHeart as heartless } from "@fortawesome/free-regular-svg-icons";
 import moment from "moment";
-import React, { useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import "./comment.scss";
 import axiosClient from "../../api/axiosClient";
@@ -15,7 +16,16 @@ import { Link } from "react-router-dom";
 
 function Comment(props) {
   const [formComment, setFormComment] = useState("");
-  const user = useSelector((state) => state.user);
+  const [isLiked, setIsLiked] = useState(false);
+  const user = useSelector((state) => {
+    if (state.user.user === null) {
+      return state.user.user;
+    } else if (state.user.user !== null && !state.user.user.user) {
+      return state.user.user;
+    } else {
+      return state.user.user.user;
+    }
+  });
 
   const activeComment = props.activeComment;
   const setActiveComment = props.setActiveComment;
@@ -29,12 +39,20 @@ function Comment(props) {
 
   parentId ? (id = parentId) : (id = comment._id);
 
+  useEffect(() => {
+    if (!user) return;
+    if (comment.userLike) {
+      const isLike = comment.userLike.some((el) => el === user._id);
+      setIsLiked(isLike);
+    }
+  }, [comment.userLike, user]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       await axiosClient.post(`comments/${id}/child`, {
         parentId: id,
-        author: user.user._id,
+        author: user._id,
         content: formComment,
       });
       setFormComment("");
@@ -56,6 +74,23 @@ function Comment(props) {
       );
       setFormComment("");
       setActiveComment(null);
+      setNewComment(!newComment);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const handleLikeComment = async () => {
+    try {
+      await axiosClient.post(
+        `/comments/${comment._id}/likeComment?isChild=${
+          parentId ? true : false
+        }`,
+        {
+          userId: user._id,
+        }
+      );
+      setIsLiked(!isLiked);
       setNewComment(!newComment);
     } catch (e) {
       console.log(e);
@@ -110,23 +145,50 @@ function Comment(props) {
       </Link>
       <div className="comment__info">
         <div className="comment__info__user">
-          <span className="comment-username">{comment.author.username}</span>
+          <Link to={`/user/${comment.author._id}`}>
+            <span className="comment-username">{comment.author.username}</span>
+          </Link>
           <span className="comment-content">{comment.content}</span>
         </div>
         <div className="comment__info__action">
           <h5 className="time">
             {moment(new Date(comment.createdAt)).fromNow()}
           </h5>
-          <h5 className="reply" onClick={handleReply}>
-            Reply
-          </h5>
-          <h5 className="likeCount">
-            20{" "}
-            <span>
-              <FontAwesomeIcon icon={faHeart} />
-            </span>
-          </h5>
-          {user && comment.author._id === user.user._id && (
+          <Fragment>
+            {user && (
+              <h5 className="reply" onClick={handleReply}>
+                Reply
+              </h5>
+            )}
+
+            <h5 className="likeCount">
+              {user && (
+                <Fragment>
+                  {isLiked ? (
+                    <span onClick={handleLikeComment}>
+                      <FontAwesomeIcon icon={faHeart} className="icon-heart" />
+                    </span>
+                  ) : (
+                    <span onClick={handleLikeComment}>
+                      <FontAwesomeIcon
+                        icon={heartless}
+                        className="icon-heartless"
+                      />
+                    </span>
+                  )}
+                  <span>{comment.like === 0 ? "" : comment.like}</span>
+                </Fragment>
+              )}
+              {!user && (
+                <Fragment>
+                  <FontAwesomeIcon icon={faHeart} className="icon-heart" />
+                  <span>{comment.like === 0 ? "" : comment.like}</span>
+                </Fragment>
+              )}
+            </h5>
+          </Fragment>
+
+          {user && comment.author._id === user._id && (
             <div className="actions-wrapper">
               <FontAwesomeIcon
                 icon={faEllipsis}
@@ -188,6 +250,7 @@ function Comment(props) {
             <button
               className="btn-cancle"
               onClick={() => setActiveComment(null)}
+              type="button"
             >
               Cancle
             </button>
@@ -220,6 +283,7 @@ function Comment(props) {
             <button
               className="btn-cancle"
               onClick={() => setActiveComment(null)}
+              type="button"
             >
               Cancle
             </button>

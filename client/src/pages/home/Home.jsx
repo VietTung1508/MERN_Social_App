@@ -7,7 +7,7 @@ function Home() {
   const { category } = queryString.parse(location.search);
 
   return (
-    <div className="home container">
+    <div className="home">
       <Masonary category={category} />
     </div>
   );

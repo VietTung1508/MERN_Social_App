@@ -1,4 +1,47 @@
+@use "../../sass/" as *;
+
+@keyframes spin {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
 .masonary {
-  columns: 4;
+  column-count: 4;
   column-gap: 15px;
+
+  &.noSidebar {
+    column-count: 5;
+
+    @include tablet {
+      column-count: 4;
+    }
+
+    @include mobile {
+      column-count: 2;
+    }
+  }
+
+  &.followPage {
+    column-count: 3;
+  }
+
+  @include tablet {
+    column-count: 3;
+  }
+
+  @include mobile {
+    column-count: 2;
+  }
+}
+
+.loading_pin {
+  text-align: center;
+
+  .loading-icon {
+    color: $text-color;
+    padding: 1.5rem 0;
+    font-size: 30px;
+    animation: spin 1s linear infinite;
+  }
 }

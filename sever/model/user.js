@@ -13,8 +13,8 @@ const userSchema = new Schema({
     filename: { type: String },
   },
   savedPin: [{ type: Schema.Types.ObjectId, ref: "Post" }],
-  following: [{ type: Schema.Types.ObjectId, ref: "Following" }],
-  followers: { type: Number },
+  following: [{ type: Schema.Types.ObjectId, ref: "User" }],
+  followers: { type: Number, default: 0 },
 });
 
 module.exports = mongoose.model("User", userSchema);

@@ -7,16 +7,32 @@
   cursor: zoom-in;
   position: relative;
 
-  &__download {
+  &__actions {
     position: absolute;
     display: none;
     top: 2%;
     right: 3%;
-    padding: 8px;
-    border-radius: 50%;
-    background-color: rgb(166, 27, 27);
-    color: #fff;
     z-index: 10;
+
+    .pin-save {
+      padding: 10px 16px;
+      font-size: 15px;
+      border-radius: 30px;
+      background-color: rgb(166, 27, 27);
+      color: #fff;
+      cursor: pointer;
+
+      &.active {
+        background-color: black;
+      }
+    }
+
+    .pin-download {
+      padding: 8px;
+      border-radius: 50%;
+      background-color: rgb(166, 27, 27);
+      color: #fff;
+    }
   }
 
   &__info {
@@ -34,8 +50,12 @@
   }
 
   &:hover {
-    .pin__download {
+    .pin__actions {
       display: unset;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
     }
 
     img {

@@ -24,21 +24,36 @@ function Detail() {
   const [activeComment, setActiveComment] = useState(null);
   const [hideComment, setHideComment] = useState(false);
   const [postEditModal, setPostEditModal] = useState(false);
+  const [update, setUpdate] = useState(false);
+  const [savePin, setSavePin] = useState(null);
+  const [isSaved, setIsSaved] = useState(null);
+  const [isFollowed, setIsFollowed] = useState(null);
+  const [following, setFollowing] = useState(null);
   const [confirmDeleteModal, setConfirmDeleteModal] = useState({
     modal: false,
     id: null,
   });
-  const [update, setUpdate] = useState(false);
-  const [savePin, setSavePin] = useState(null);
-  const [isSaved, setIsSaved] = useState(false);
+  const user = useSelector((state) => {
+    if (state.user.user === null) {
+      return state.user.user;
+    } else if (state.user.user !== null && !state.user.user.user) {
+      return state.user.user;
+    } else {
+      return state.user.user.user;
+    }
+  });
+
+  useEffect(() => {
+    if (following && post) {
+      setIsFollowed(following.some((el) => el._id === post.author._id));
+    }
+  }, [following, post]);
 
   useEffect(() => {
     if (savePin && post) {
       setIsSaved(savePin.some((el) => el._id === post._id));
     }
   }, [savePin, post]);
-
-  const user = useSelector((state) => state.user);
 
   useEffect(() => {
     const getPost = async () => {
@@ -62,22 +77,24 @@ function Detail() {
     if (!user) return;
     const getUser = async () => {
       try {
-        const res = await axiosClient.get(`users/${user.user._id}`);
+        const res = await axiosClient.get(`users/${user._id}`);
         setSavePin(res.data.savedPin);
+        setFollowing(res.data.following);
       } catch (e) {
         console.log(e);
       }
     };
 
     getUser();
-  }, [id, user]);
+  }, [user]);
 
   const handleSubmitComment = async (e) => {
+    e.preventDefault();
     const cmt = comment;
     if (cmt === "" || cmt === " ") return;
     try {
       await axiosClient.post(`comments/${post._id}`, {
-        author: user.user._id,
+        author: user._id,
         content: cmt,
       });
       setComment("");
@@ -103,8 +120,19 @@ function Detail() {
 
   const handleSavePin = async (e) => {
     try {
-      await axiosClient.post(`users/${post._id}`, { userId: user.user._id });
+      await axiosClient.post(`users/${post._id}`, { userId: user._id });
       setIsSaved(!isSaved);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const handleFollow = async () => {
+    try {
+      await axiosClient.post(`users/follow/${post.author._id}`, {
+        userId: user._id,
+      });
+      setIsFollowed(!isFollowed);
     } catch (e) {
       console.log(e);
     }
@@ -113,8 +141,6 @@ function Detail() {
   const handleComment = (e) => {
     setComment(e.target.value);
   };
-
-  console.log(post);
 
   return (
     <div className="wrapper">
@@ -160,7 +186,7 @@ function Detail() {
               {user ? (
                 <div className="post-action">
                   <div className="icons">
-                    {user.user._id === post.author._id && (
+                    {user._id === post.author._id && (
                       <FontAwesomeIcon
                         icon={faPenToSquare}
                         className="post-icon"
@@ -230,7 +256,14 @@ function Detail() {
                     <p className="followers">10k followers</p>
                   </div>
                 </div>
-                <button className="btn-follow">Follow</button>
+                {user && user._id !== post.author._id && (
+                  <button
+                    className={`btn-follow ${isFollowed && "active"}`}
+                    onClick={handleFollow}
+                  >
+                    {isFollowed ? "Followed" : "Follow"}
+                  </button>
+                )}
               </div>
               <div className="comments">
                 <h3>
@@ -245,18 +278,14 @@ function Detail() {
                   )}
                 </h3>
                 {user && (
-                  <div className="comments__action">
-                    {user.user.avatar ? (
+                  <form className="comments__action">
+                    {user.avatar ? (
                       <div className="user-avatar">
-                        <img
-                          src={user.user.avatar.url}
-                          alt=""
-                          draggable="false"
-                        />
+                        <img src={user.avatar.url} alt="" draggable="false" />
                       </div>
                     ) : (
                       <div className="user-anonymous-avatar">
-                        <span>{user.user.username[0].toUpperCase()}</span>
+                        <span>{user.username[0].toUpperCase()}</span>
                       </div>
                     )}
                     <div className="comment-wrapper">
@@ -270,10 +299,11 @@ function Detail() {
                     <button
                       className="btn-comment"
                       onClick={handleSubmitComment}
+                      type="submit"
                     >
                       <FontAwesomeIcon icon={faPaperPlane} />
                     </button>
-                  </div>
+                  </form>
                 )}
                 <div
                   className={`comments__comments ${hideComment ? "hide" : ""}`}

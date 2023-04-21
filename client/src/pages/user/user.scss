@@ -50,13 +50,21 @@
         margin-bottom: 20px;
       }
 
+      .introduction {
+        margin-bottom: 10px;
+      }
+
       .user-actions {
         button {
-          padding: 8px 12px;
+          padding: 10px 15px;
           border-radius: 30px;
           background-color: $button-background-color;
           color: $text-color;
           cursor: pointer;
+
+          &.active {
+            background-color: $sidebar-color;
+          }
         }
       }
 

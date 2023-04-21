@@ -16,6 +16,7 @@ const register = async (req, res, next) => {
     const hash = bcrypt.hashSync(password, salt);
     const newUser = new User({
       ...user,
+      followers: 0,
       password: hash,
     });
     await newUser.save();

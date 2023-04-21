@@ -1,36 +1,66 @@
 const Post = require("../model/post.js");
 const Category = require("../model/category.js");
+const User = require("../model/user.js");
 const { cloudinary } = require("../cloudinary");
 
 const getPosts = async (req, res) => {
-  const { category, userId } = req.query;
+  const { category, userId, pageNumber } = req.query;
   try {
+    let posts;
     if (category) {
-      const posts = await Post.find({ category: category }).populate("author");
-      res.status(200).json(posts);
+      posts = await Post.find({ category: category })
+        .populate("author")
+        .limit(10)
+        .skip(10 * pageNumber);
     } else if (userId) {
-      const posts = await Post.find({ author: userId }).populate("author");
-      res.status(200).json(posts);
+      posts = await Post.find({ author: userId })
+        .populate("author")
+        .limit(10)
+        .skip(10 * pageNumber);
     } else {
-      const posts = await Post.find({}).populate("author");
-      res.status(200).json(posts);
+      posts = await Post.find({})
+        .populate("author")
+        .limit(10)
+        .skip(10 * pageNumber);
     }
+    res.status(200).json(posts);
   } catch (e) {
     res.status(500).json(e);
   }
 };
 
-const searchPost = async (req, res) => {
-  const { q } = req.query;
-  console.log(q);
+const getFollowingPin = async (req, res) => {
+  const { author } = req.body;
+  const { pageNumber } = req.query;
   try {
-    const searchPost = await Post.find({
-      $or: [{ title: new RegExp(q, "i") }, { category: new RegExp(q, "i") }],
-    })
+    const posts = await Post.find({ author: { $in: [...author] } })
       .populate("author")
-      .limit(5);
-    console.log(searchPost);
-    res.status(200).json(searchPost);
+      .limit(10)
+      .skip(10 * pageNumber);
+    res.status(200).json(posts);
+  } catch (e) {
+    console.log(e);
+  }
+};
+
+const searchPost = async (req, res) => {
+  const { q, limit, pageNumber } = req.query;
+  try {
+    if (limit === "true") {
+      const searchPost = await Post.find({ title: new RegExp(q, "i") })
+        .populate("author")
+        .limit(4);
+      const users = await User.find({ username: new RegExp(q, "i") }).limit(4);
+      res.status(200).json([...searchPost, ...users]);
+    } else {
+      const searchPost = await Post.find({
+        $or: [{ title: new RegExp(q, "i") }, { category: new RegExp(q, "i") }],
+      })
+        .populate("author")
+        .limit(10)
+        .skip(10 * pageNumber);
+      res.status(200).json(searchPost);
+    }
   } catch (e) {
     res.status(500).json(e);
   }
@@ -116,4 +146,5 @@ module.exports = {
   createPost,
   update,
   destroy,
+  getFollowingPin,
 };

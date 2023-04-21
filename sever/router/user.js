@@ -7,6 +7,7 @@ const upload = multer({ storage });
 
 route.get("/:id", userController.getUser);
 route.post("/:id", userController.savePin);
+route.post("/follow/:id", userController.followUser);
 route.put("/:userId", upload.single("avatar"), userController.edit);
 
 module.exports = route;

@@ -1,5 +1,6 @@
 const { Comment, childComment } = require("../model/comment.js");
 const Post = require("../model/post.js");
+const User = require("../model/user.js");
 const mongoose = require("mongoose");
 
 const create = async (req, res) => {
@@ -28,6 +29,82 @@ const createChild = async (req, res) => {
     await newChildComment.save();
     res.status(200).json("Success");
   } catch {}
+};
+
+const likeComment = async (req, res) => {
+  const { isChild } = req.query;
+  const { commentId } = req.params;
+  const { userId } = req.body;
+  const ObjectId = new mongoose.Types.ObjectId(commentId);
+  const UserId = new mongoose.Types.ObjectId(userId);
+  try {
+    const user = await User.findById(userId);
+    if (isChild === "true") {
+      const child = await childComment.findById(commentId);
+      const isLiked = child.userLike.includes(user._id);
+      if (isLiked) {
+        await Comment.findByIdAndUpdate(
+          child.parentId,
+          {
+            $inc: {
+              "childComments.$[field].like": -1,
+            },
+            $pull: {
+              "childComments.$[field].userLike": UserId,
+            },
+          },
+          {
+            arrayFilters: [
+              {
+                "field._id": ObjectId,
+              },
+            ],
+          }
+        );
+        const removeIndex = child.userLike.indexOf(user._id);
+        child.like -= 1;
+        child.userLike.splice(removeIndex, 1);
+      } else {
+        await Comment.findByIdAndUpdate(
+          child.parentId,
+          {
+            $inc: {
+              "childComments.$[field].like": 1,
+            },
+            $push: {
+              "childComments.$[field].userLike": user,
+            },
+          },
+          {
+            arrayFilters: [
+              {
+                "field._id": ObjectId,
+              },
+            ],
+          }
+        );
+        child.like += 1;
+        child.userLike.push(user);
+      }
+      await child.save();
+      res.status(200).json("Good");
+    } else {
+      const comment = await Comment.findById(commentId);
+      const isLiked = comment.userLike.includes(user._id);
+      if (isLiked) {
+        const removeIndex = comment.userLike.indexOf(user._id);
+        comment.like -= 1;
+        comment.userLike.splice(removeIndex, 1);
+      } else {
+        comment.like += 1;
+        comment.userLike.push(user);
+      }
+      comment.save();
+      res.status(200).json("Good");
+    }
+  } catch (e) {
+    res.status(500).json(e);
+  }
 };
 
 const edit = async (req, res) => {
@@ -94,6 +171,7 @@ const destroy = async (req, res) => {
 module.exports = {
   create,
   createChild,
+  likeComment,
   edit,
   destroy,
 };

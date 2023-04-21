@@ -230,6 +230,10 @@
             border: none;
             outline: none;
             cursor: pointer;
+
+            &.active {
+              background-color: black;
+            }
           }
         }
         .comments {

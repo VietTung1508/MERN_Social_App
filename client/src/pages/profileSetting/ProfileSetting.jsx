@@ -8,14 +8,22 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
 function ProfileSetting() {
-  const user = useSelector((state) => state.user);
+  const user = useSelector((state) => {
+    if (state.user.user === null) {
+      return state.user.user;
+    } else if (state.user.user !== null && !state.user.user.user) {
+      return state.user.user;
+    } else {
+      return state.user.user.user;
+    }
+  });
   const [tempAvatar, setTempAvatar] = useState(null);
   const [inpValue, setInpValue] = useState({
-    firstname: user.user.firstname,
-    lastname: user.user.lastname,
-    username: user.user.username,
-    avatar: "",
-    introduction: "",
+    firstname: user.firstname,
+    lastname: user.lastname,
+    username: user.username,
+    avatar: user.avatar || "",
+    introduction: user.introduction || "",
   });
   const [isUpdating, setIsUpdating] = useState(false);
 
@@ -43,10 +51,10 @@ function ProfileSetting() {
     e.preventDefault();
     setInpValue({
       ...inpValue,
-      firstname: user.user.firstname,
-      lastname: user.user.lastname,
-      username: user.user.username,
-      introduction: "",
+      firstname: user.firstname,
+      lastname: user.lastname,
+      username: user.username,
+      introduction: user.introduction || "",
     });
   };
 
@@ -60,10 +68,10 @@ function ProfileSetting() {
       data.append("lastname", inpValue.lastname);
       data.append("username", inpValue.username);
       data.append("introduction", inpValue.introduction);
-      data.append("avatar", inpValue.avatar);
+      tempAvatar && data.append("avatar", inpValue.avatar);
 
       const res = await axios.put(
-        `http://localhost:5000/users/${user.user._id}`,
+        `http://localhost:5000/users/${user._id}`,
         data,
         {
           "content-type": "multipart/form-data",
@@ -71,7 +79,7 @@ function ProfileSetting() {
       );
       setIsUpdating(false);
       dispatch(loginSuccess({ user: res.data, token: user.accessToken }));
-      navigate("/");
+      navigate(`/user/${user._id}`);
     } catch (e) {
       console.log(e);
       setIsUpdating(false);
@@ -96,17 +104,13 @@ function ProfileSetting() {
                 <img className="temp-avatar" src={tempAvatar} alt="" />
               ) : (
                 <Fragment>
-                  {user.user.avatar ? (
+                  {user.avatar ? (
                     <div className="avatar">
-                      <img
-                        src={user.user.avatar.url}
-                        alt=""
-                        draggable="false"
-                      />
+                      <img src={user.avatar.url} alt="" draggable="false" />
                     </div>
                   ) : (
                     <div className="anonymous-avatar">
-                      <span>{user.user.username[0].toUpperCase()}</span>
+                      <span>{user.username[0].toUpperCase()}</span>
                     </div>
                   )}
                 </Fragment>

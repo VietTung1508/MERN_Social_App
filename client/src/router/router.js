@@ -7,8 +7,8 @@ import { lazy } from "react";
 
 const Home = lazy(() => import("../pages/home/Home"));
 const Detail = lazy(() => import("../pages/detail/Detail"));
-const Following = lazy(() => import("../pages/following/Following"));
 const User = lazy(() => import("../pages/user/User"));
+const Follow = lazy(() => import("../pages/follow/Follow"));
 const Upload = lazy(() => import("../pages/upload/Upload"));
 const Login = lazy(() => import("../pages/auth/loginPage/Login"));
 const ProfileSetting = lazy(() =>
@@ -31,7 +31,7 @@ const routes = [
     path: "/following",
     element: (
       <ProtectedRoute>
-        <Following />
+        <Follow />
       </ProtectedRoute>
     ),
     layout: "Default",
