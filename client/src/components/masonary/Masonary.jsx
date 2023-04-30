@@ -7,7 +7,7 @@ import { useSelector } from "react-redux";
 import { useLocation } from "react-router-dom";
 import queryString from "query-string";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCircleNotch } from "@fortawesome/free-solid-svg-icons";
+import { faArrowUp, faCircleNotch } from "@fortawesome/free-solid-svg-icons";
 
 function Masonary(props) {
   const category = props.category;
@@ -22,13 +22,24 @@ function Masonary(props) {
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(false);
 
+  const rememberMe = useSelector((state) => state.user.rememberMe);
   const currentUser = useSelector((state) => {
-    if (state.user.user === null) {
-      return state.user.user;
-    } else if (state.user.user !== null && !state.user.user.user) {
-      return state.user.user;
+    if (rememberMe) {
+      if (state.user.user === null) {
+        return state.user.user;
+      } else if (state.user.user !== null && !state.user.user.user) {
+        return state.user.user;
+      } else {
+        return state.user.user.user;
+      }
     } else {
-      return state.user.user.user;
+      if (state.tempUser.user === null) {
+        return state.tempUser.user;
+      } else if (state.tempUser.user !== null && !state.tempUser.user.user) {
+        return state.tempUser.user;
+      } else {
+        return state.tempUser.user.user;
+      }
     }
   });
 
@@ -118,6 +129,10 @@ function Masonary(props) {
     getPosts();
   }, [category, user, followingPin, q, pageNumber]);
 
+  const handleGoToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   return (
     <>
       <div
@@ -127,7 +142,12 @@ function Masonary(props) {
       >
         {savePin
           ? savePin.map((post, i) => (
-              <Pin data={post} key={i} savedPin={savedPin} />
+              <Pin
+                data={post}
+                key={i}
+                savedPin={savedPin}
+                currentUser={currentUser}
+              />
             ))
           : shuffledPosts &&
             shuffledPosts.map((post, i) => (
@@ -135,12 +155,23 @@ function Masonary(props) {
                 refData={shuffledPosts.length === i + 1 && lastPin}
                 data={post}
                 key={i}
+                currentUser={currentUser}
               />
             ))}
+        <div className="go-up-wrapper" onClick={handleGoToTop}>
+          <FontAwesomeIcon icon={faArrowUp} className="go-up-icon" />
+        </div>
       </div>
       {loading && (
         <div className="loading_pin">
           <FontAwesomeIcon icon={faCircleNotch} className="loading-icon" />
+        </div>
+      )}
+      {q && shuffledPosts && shuffledPosts.length === 0 && !loading && (
+        <div className="notFound">
+          <h1>OOPS!</h1>
+          <img src="./images/404.png" alt="" className="notFound-img" />
+          <p className="notFound-info">NO PIN FOUNDED</p>
         </div>
       )}
     </>

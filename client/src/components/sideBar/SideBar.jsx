@@ -4,7 +4,7 @@ import { faHouse, faPlus, faBars } from "@fortawesome/free-solid-svg-icons";
 import { faUser } from "@fortawesome/free-regular-svg-icons";
 import { Link, useLocation } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { setSideBar } from "../../redux/modeSlice";
+import { setSideBar, openSideBar } from "../../redux/modeSlice";
 import { useState, useEffect } from "react";
 import axiosClient from "../../api/axiosClient";
 
@@ -15,14 +15,14 @@ const pages = [
     path: "/",
   },
   {
-    icon: faUser,
-    page: "Following",
-    path: "/following",
-  },
-  {
     icon: faPlus,
     page: "Upload",
     path: "/upload",
+  },
+  {
+    icon: faUser,
+    page: "Following",
+    path: "/following",
   },
 ];
 
@@ -31,6 +31,21 @@ function SideBar() {
   const { pathname } = useLocation();
   const sidebar = useSelector((state) => state.mode.sideBar);
   const dispatch = useDispatch();
+  const [isMobile, setIsMobile] = useState(false);
+
+  const handleResize = () => {
+    if (window.innerWidth < 600) {
+      setIsMobile(true);
+      dispatch(openSideBar());
+    } else {
+      setIsMobile(false);
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, [isMobile]);
 
   useEffect(() => {
     const getCategories = async () => {
@@ -58,7 +73,7 @@ function SideBar() {
         />
         <Link to="/">
           <div className="brand">
-            <img className="logo" src="/images/logo.png" />
+            <img className="logo" src="/images/logo.png" alt="" />
             <h4 className="brandName">MEMORIES</h4>
           </div>
         </Link>

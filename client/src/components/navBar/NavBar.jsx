@@ -12,22 +12,37 @@ import axiosClient from "../../api/axiosClient";
 import SearchItem from "../searchItem/SearchItem";
 import { useLocation } from "react-router-dom";
 import { logout } from "../../redux/userSlice";
+import { tempLogout } from "../../redux/tempUserSlice";
 import { useNavigate } from "react-router-dom";
 
 function NavBar() {
   const [search, setSearch] = useState("");
   const [searchArray, setSearchArray] = useState(null);
   const [userMenu, setUserMenu] = useState(false);
+  const [shrink, setShrink] = useState(false);
   const path = useLocation().pathname;
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  const sidebar = useSelector((state) => state.mode.sideBar);
+  const rememberMe = useSelector((state) => state.user.rememberMe);
   const user = useSelector((state) => {
-    if (state.user.user === null) {
-      return state.user.user;
-    } else if (state.user.user !== null && !state.user.user.user) {
-      return state.user.user;
+    if (rememberMe) {
+      if (state.user.user === null) {
+        return state.user.user;
+      } else if (state.user.user !== null && !state.user.user.user) {
+        return state.user.user;
+      } else {
+        return state.user.user.user;
+      }
     } else {
-      return state.user.user.user;
+      if (state.tempUser.user === null) {
+        return state.tempUser.user;
+      } else if (state.tempUser.user !== null && !state.tempUser.user.user) {
+        return state.tempUser.user;
+      } else {
+        return state.tempUser.user.user;
+      }
     }
   });
 
@@ -36,10 +51,25 @@ function NavBar() {
   }, [path]);
 
   useEffect(() => {
-    const getSearch = setTimeout(async () => {
-      if (search === "" || search.trim() === "") {
-        return;
+    const shrinkHeader = () => {
+      if (
+        document.body.scrollTop > 100 ||
+        document.documentElement.scrollTop > 100
+      ) {
+        setShrink(true);
+      } else {
+        setShrink(false);
       }
+    };
+    window.addEventListener("scroll", shrinkHeader);
+    return () => {
+      window.removeEventListener("scroll", shrinkHeader);
+    };
+  }, []);
+
+  useEffect(() => {
+    const getSearch = setTimeout(async () => {
+      if (search === "" || search.trim() === "") return;
       const res = await axiosClient.get(
         `posts/search/?q=${search}&limit=${true}`
       );
@@ -52,7 +82,12 @@ function NavBar() {
   }, [search]);
 
   const handleLogOut = () => {
-    dispatch(logout());
+    if (rememberMe) {
+      dispatch(logout());
+    } else {
+      dispatch(tempLogout());
+    }
+    setUserMenu(false);
     navigate("/");
   };
 
@@ -62,6 +97,7 @@ function NavBar() {
 
   const handleSubmitSearch = (e) => {
     e.preventDefault();
+    if (search === "" || search.trim() === "") return;
     navigate(`/?q=${search}`);
     setSearch("");
   };
@@ -72,15 +108,24 @@ function NavBar() {
 
   const handleSearchWrapper = () => {
     setSearch("");
+    setUserMenu(false);
+  };
+
+  const handleUserMenuWrapper = () => {
+    setUserMenu(false);
   };
 
   return (
-    <div className={"navBar"}>
+    <div className={`navBar ${shrink && `shrink ${sidebar ? "sb" : "noSb"}`}`}>
       <div
         className={`navBar-search-wrapper ${
           searchArray && searchArray.length > 0 && search && "active"
         }`}
         onClick={handleSearchWrapper}
+      />
+      <div
+        className={`navBar-userMenu-wrapper ${userMenu && "active"}`}
+        onClick={handleUserMenuWrapper}
       />
       <form className="navBar__search" onSubmit={handleSubmitSearch}>
         <div className="search-box">
@@ -176,9 +221,6 @@ function NavBar() {
                 </div>
                 <p className="divide-menu">Another options</p>
                 <div className="another-options">
-                  <div className="userMenu__item" onClick={handleMenu}>
-                    <h3>Cancle</h3>
-                  </div>
                   <div className="userMenu__item" onClick={handleLogOut}>
                     <h3>Log out</h3>
                   </div>

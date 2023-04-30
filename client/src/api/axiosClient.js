@@ -2,7 +2,7 @@ import axios from "axios";
 
 const axiosClient = axios.create({
   withCredentials: false,
-  baseURL: "http://localhost:5000/",
+  baseURL: "https://memories-api.onrender.com/",
   headers: {
     "Content-Type": "application/json",
   },

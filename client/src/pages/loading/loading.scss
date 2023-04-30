@@ -30,6 +30,9 @@
       color: $text-color;
       font-size: 25px;
       font-weight: 800;
+      @include mobile {
+        display: none;
+      }
     }
   }
 }

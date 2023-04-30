@@ -12,13 +12,24 @@ function User() {
   const [isFollowed, setIsFollowed] = useState(false);
   const { userId } = useParams();
 
+  const rememberMe = useSelector((state) => state.user.rememberMe);
   const currentUser = useSelector((state) => {
-    if (state.user.user === null) {
-      return state.user.user;
-    } else if (state.user.user !== null && !state.user.user.user) {
-      return state.user.user;
+    if (rememberMe) {
+      if (state.user.user === null) {
+        return state.user.user;
+      } else if (state.user.user !== null && !state.user.user.user) {
+        return state.user.user;
+      } else {
+        return state.user.user.user;
+      }
     } else {
-      return state.user.user.user;
+      if (state.tempUser.user === null) {
+        return state.tempUser.user;
+      } else if (state.tempUser.user !== null && !state.tempUser.user.user) {
+        return state.tempUser.user;
+      } else {
+        return state.tempUser.user.user;
+      }
     }
   });
 
@@ -75,7 +86,12 @@ function User() {
         <div className="user ">
           {user.avatar ? (
             <div className="user-avatar">
-              <img src={user.avatar.url} alt="" draggable="false" />
+              <img
+                className="user-avatar-img"
+                src={user.avatar.url}
+                alt=""
+                draggable="false"
+              />
             </div>
           ) : (
             <div className="user-anonymous-avatar">
@@ -85,6 +101,7 @@ function User() {
           <div className="user-info">
             <h1 className="username">{user.username}</h1>
             <p className="email">{user.email}</p>
+            <p className="followers">{user.followers} followers</p>
             <p className="introduction">{user.introduction}</p>
             <div className="user-actions">
               {currentUser._id === user._id ? (

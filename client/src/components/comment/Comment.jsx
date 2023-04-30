@@ -17,13 +17,32 @@ import { Link } from "react-router-dom";
 function Comment(props) {
   const [formComment, setFormComment] = useState("");
   const [isLiked, setIsLiked] = useState(false);
+  const rememberMe = useSelector((state) => state.user.rememberMe);
   const user = useSelector((state) => {
-    if (state.user.user === null) {
-      return state.user.user;
-    } else if (state.user.user !== null && !state.user.user.user) {
-      return state.user.user;
+    if (rememberMe) {
+      if (state.user.user === null) {
+        return state.user.user;
+      } else if (state.user.user !== null && !state.user.user.user) {
+        return state.user.user;
+      } else {
+        return state.user.user.user;
+      }
     } else {
-      return state.user.user.user;
+      if (state.tempUser.user === null) {
+        return state.tempUser.user;
+      } else if (state.tempUser.user !== null && !state.tempUser.user.user) {
+        return state.tempUser.user;
+      } else {
+        return state.tempUser.user.user;
+      }
+    }
+  });
+
+  const token = useSelector((state) => {
+    if (rememberMe) {
+      return state.user.token;
+    } else {
+      return state.tempUser.token;
     }
   });
 
@@ -50,11 +69,17 @@ function Comment(props) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axiosClient.post(`comments/${id}/child`, {
-        parentId: id,
-        author: user._id,
-        content: formComment,
-      });
+      await axiosClient.post(
+        `comments/${id}/child`,
+        {
+          parentId: id,
+          author: user._id,
+          content: formComment,
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       setFormComment("");
       setActiveComment(null);
       setNewComment(!newComment);
@@ -70,6 +95,9 @@ function Comment(props) {
         `comments/${comment._id}?isChild=${parentId ? true : false}`,
         {
           content: formComment,
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
         }
       );
       setFormComment("");
@@ -83,11 +111,14 @@ function Comment(props) {
   const handleLikeComment = async () => {
     try {
       await axiosClient.post(
-        `/comments/${comment._id}/likeComment?isChild=${
+        `comments/${comment._id}/likeComment?isChild=${
           parentId ? true : false
         }`,
         {
           userId: user._id,
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
         }
       );
       setIsLiked(!isLiked);
@@ -176,15 +207,19 @@ function Comment(props) {
                       />
                     </span>
                   )}
-                  <span>{comment.like === 0 ? "" : comment.like}</span>
                 </Fragment>
               )}
               {!user && (
-                <Fragment>
-                  <FontAwesomeIcon icon={faHeart} className="icon-heart" />
-                  <span>{comment.like === 0 ? "" : comment.like}</span>
-                </Fragment>
+                <Link to="/login">
+                  <span className="icon-heartless-noUser">
+                    <FontAwesomeIcon
+                      icon={heartless}
+                      className="icon-heartless"
+                    />
+                  </span>
+                </Link>
               )}
+              <span>{comment.like === 0 ? "" : comment.like}</span>
             </h5>
           </Fragment>
 

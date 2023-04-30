@@ -11,9 +11,12 @@ export const modeSlice = createSlice({
     setSideBar: (state) => {
       state.sideBar = !state.sideBar;
     },
+    openSideBar: (state) => {
+      state.sideBar = true;
+    },
   },
 });
 
-export const { setSideBar } = modeSlice.actions;
+export const { setSideBar, openSideBar } = modeSlice.actions;
 
 export default modeSlice.reducer;

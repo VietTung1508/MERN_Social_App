@@ -9,6 +9,7 @@ import Loading from "../loading/Loading";
 
 function Upload() {
   const [postImage, setPostImage] = useState(null);
+  const [error, setError] = useState(null);
   const [value, setValue] = useState({
     title: "",
     image: "",
@@ -18,13 +19,32 @@ function Upload() {
   const [isLoading, setIsLoading] = useState(false);
 
   const navigate = useNavigate();
+  const rememberMe = useSelector((state) => state.user.rememberMe);
   const user = useSelector((state) => {
-    if (state.user.user === null) {
-      return state.user.user;
-    } else if (state.user.user !== null && !state.user.user.user) {
-      return state.user.user;
+    if (rememberMe) {
+      if (state.user.user === null) {
+        return state.user.user;
+      } else if (state.user.user !== null && !state.user.user.user) {
+        return state.user.user;
+      } else {
+        return state.user.user.user;
+      }
     } else {
-      return state.user.user.user;
+      if (state.tempUser.user === null) {
+        return state.tempUser.user;
+      } else if (state.tempUser.user !== null && !state.tempUser.user.user) {
+        return state.tempUser.user;
+      } else {
+        return state.tempUser.user.user;
+      }
+    }
+  });
+
+  const token = useSelector((state) => {
+    if (rememberMe) {
+      return state.user.token;
+    } else {
+      return state.tempUser.token;
     }
   });
 
@@ -51,15 +71,17 @@ function Upload() {
     data.append("title", value.title);
     data.append("image", value.image);
     data.append("content", value.content);
-    data.append("category", value.category.toLowerCase());
+    data.append("category", value.category.toLowerCase().trim());
     try {
-      await axios.post(`http://localhost:5000/posts/${user._id}`, data, {
+      await axios.post(`https://memories-api.onrender.com/posts/create`, data, {
         "content-type": "multipart/form-data",
+        headers: { Authorization: `Bearer ${token}` },
       });
       setIsLoading(false);
       navigate("/");
     } catch (e) {
       setIsLoading(false);
+      setError(e.response.data.msg);
       console.log(e);
     }
   };
@@ -83,7 +105,6 @@ function Upload() {
                   name="image"
                   id="image"
                   onInput={handlePreImage}
-                  required
                 />
                 <label htmlFor="image">
                   <FontAwesomeIcon
@@ -118,9 +139,15 @@ function Upload() {
               required
             />
             <div className="upload-author">
-              <div className="avatar">
-                <span>{user && user.username[0]}</span>
-              </div>
+              {user.avatar ? (
+                <div className="avatar">
+                  <img src={user.avatar.url} alt="" draggable="false" />
+                </div>
+              ) : (
+                <div className="anonymous-avatar">
+                  <span>{user.username[0].toUpperCase()}</span>
+                </div>
+              )}
               <h4 className="author-username">{user && user.username}</h4>
             </div>
             <input
@@ -142,6 +169,7 @@ function Upload() {
               value={value.category}
               onChange={handleChangeValue}
             />
+            {error && <span className="upload-error">{error}</span>}
             <button className="btn-upload" type="submit">
               Upload
             </button>

@@ -43,14 +43,16 @@ const followUser = async (req, res) => {
     const followUser = await User.findById(id);
     const user = await User.findById(userId);
     const isFollowed = user.following.includes(followUser._id);
-
     if (isFollowed) {
       const removeIndex = user.following.indexOf(followUser._id);
       user.following.splice(removeIndex, 1);
+      followUser.followers -= 1;
     } else {
       user.following.push(followUser);
+      followUser.followers += 1;
     }
     await user.save();
+    await followUser.save();
     res.status(200).json("follow success");
   } catch (e) {
     res.status(500).json(e);
@@ -58,10 +60,10 @@ const followUser = async (req, res) => {
 };
 
 const edit = async (req, res) => {
-  const { userId } = req.params;
+  const { id } = req.user;
   const userUpdate = req.body;
   try {
-    const user = await User.findById(userId);
+    const user = await User.findById(id);
     if (Boolean(req.file)) {
       const avatar = {
         url: req.file.path,
@@ -69,7 +71,7 @@ const edit = async (req, res) => {
       };
       cloudinary.uploader.destroy(user.avatar.filename);
       const updatedUser = await User.findByIdAndUpdate(
-        userId,
+        id,
         {
           avatar,
           ...userUpdate,
@@ -79,7 +81,7 @@ const edit = async (req, res) => {
       res.status(200).json(updatedUser);
     } else {
       const updatedUser = await User.findByIdAndUpdate(
-        userId,
+        id,
         {
           ...userUpdate,
         },

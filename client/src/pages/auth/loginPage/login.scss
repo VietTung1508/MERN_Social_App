@@ -10,25 +10,35 @@
   background-color: #cad2c5;
 
   &__box {
-    width: 80%;
+    width: 60%;
     height: 94%;
     display: flex;
     background-color: #fff;
     position: relative;
     border-radius: 10px;
-
+    @include mobile {
+      width: 90%;
+      height: 70%;
+    }
     .close-icon {
       position: absolute;
       top: 15px;
       right: 15px;
       color: #52796f;
       cursor: pointer;
+      @include mobile {
+        font-size: 20px;
+      }
     }
 
     &__left {
-      width: 35%;
+      width: 40%;
       height: 100%;
       position: relative;
+      @include mobile {
+        display: none;
+      }
+
       img {
         width: 100%;
         height: 100%;
@@ -46,24 +56,34 @@
       }
     }
     &__right {
-      width: 65%;
+      width: 60%;
       height: 100%;
       padding: 2rem;
       background-color: #fff;
       border-radius: 10px;
+      @include mobile {
+        width: 100%;
+        margin-top: 20px;
+      }
       h1 {
         margin-bottom: 15px;
         font-weight: 800;
+        @include mobile {
+          font-size: 35px;
+        }
       }
 
       .login-link {
         margin-bottom: 1.8rem;
         font-size: 13px;
         word-spacing: 2px;
-
+        @include mobile {
+          font-size: 15px;
+        }
         span {
           color: #52796f;
           cursor: pointer;
+          text-decoration: underline;
         }
       }
 
@@ -97,11 +117,35 @@
           input {
             padding: 8px 12px;
           }
+
+          .forgetPassword {
+            position: absolute;
+            right: 0;
+            top: 12px;
+            font-size: 11px;
+            text-decoration: underline;
+            color: #52796f;
+            cursor: pointer;
+          }
         }
 
         .err {
           width: 100%;
           color: #b00020;
+        }
+
+        .rememberMe-wrapper {
+          flex-direction: row;
+          margin-bottom: -5px;
+          gap: 3px;
+          input {
+            accent-color: $button-background-color;
+          }
+
+          label {
+            font-size: 13px;
+            font-weight: normal;
+          }
         }
 
         button {
@@ -111,7 +155,6 @@
           font-weight: 700;
           padding: 15px 35px;
           border-radius: 4px;
-          margin-top: 10px;
           border: none;
           outline: none;
           cursor: pointer;

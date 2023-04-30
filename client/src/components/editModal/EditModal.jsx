@@ -3,6 +3,7 @@ import Loading from "../../pages/loading/Loading";
 import "./editModal.scss";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 function EditModal(props) {
   const post = props.post;
@@ -18,6 +19,16 @@ function EditModal(props) {
   });
   const [loading, setLoading] = useState(false);
 
+  const rememberMe = useSelector((state) => state.user.rememberMe);
+
+  const token = useSelector((state) => {
+    if (rememberMe) {
+      return state.user.token;
+    } else {
+      return state.tempUser.token;
+    }
+  });
+
   const navigate = useNavigate();
 
   const handleValue = (e) => {
@@ -27,7 +38,9 @@ function EditModal(props) {
   const handleUpdate = async (e) => {
     e.preventDefault();
     try {
-      await axiosClient.put(`posts/${post._id}`, value);
+      await axiosClient.put(`posts/${post._id}`, value, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       setUpdate(!update);
       setPostEditModal(false);
     } catch (e) {
@@ -43,7 +56,9 @@ function EditModal(props) {
   const handleDelete = async () => {
     setLoading(true);
     try {
-      await axiosClient.delete(`posts/${post._id}`);
+      await axiosClient.delete(`posts/${post._id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       navigate("/");
       setLoading(false);
     } catch (e) {
@@ -68,7 +83,11 @@ function EditModal(props) {
               >
                 Cancle
               </button>
-              <button className="btn-delete" onClick={handleDelete}>
+              <button
+                className="btn-delete"
+                type="button"
+                onClick={handleDelete}
+              >
                 Delete
               </button>
             </div>
@@ -123,12 +142,15 @@ function EditModal(props) {
             </div>
             <div className="post-edit-modal-actions">
               <div className="action-left">
-                <button onClick={handleDeleteModal}>Delete</button>
+                <button onClick={handleDeleteModal} type="button">
+                  Delete
+                </button>
               </div>
               <div className="action-right">
                 <button
                   onClick={() => setPostEditModal(false)}
                   className="btn-cancle"
+                  type="button"
                 >
                   Cancel
                 </button>

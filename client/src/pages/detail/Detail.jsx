@@ -33,13 +33,31 @@ function Detail() {
     modal: false,
     id: null,
   });
+  const rememberMe = useSelector((state) => state.user.rememberMe);
   const user = useSelector((state) => {
-    if (state.user.user === null) {
-      return state.user.user;
-    } else if (state.user.user !== null && !state.user.user.user) {
-      return state.user.user;
+    if (rememberMe) {
+      if (state.user.user === null) {
+        return state.user.user;
+      } else if (state.user.user !== null && !state.user.user.user) {
+        return state.user.user;
+      } else {
+        return state.user.user.user;
+      }
     } else {
-      return state.user.user.user;
+      if (state.tempUser.user === null) {
+        return state.tempUser.user;
+      } else if (state.tempUser.user !== null && !state.tempUser.user.user) {
+        return state.tempUser.user;
+      } else {
+        return state.tempUser.user.user;
+      }
+    }
+  });
+  const token = useSelector((state) => {
+    if (rememberMe) {
+      return state.user.token;
+    } else {
+      return state.tempUser.token;
     }
   });
 
@@ -93,10 +111,16 @@ function Detail() {
     const cmt = comment;
     if (cmt === "" || cmt === " ") return;
     try {
-      await axiosClient.post(`comments/${post._id}`, {
-        author: user._id,
-        content: cmt,
-      });
+      await axiosClient.post(
+        `comments/${post._id}`,
+        {
+          author: user._id,
+          content: cmt,
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       setComment("");
       setNewComment(!newComment);
     } catch (e) {
@@ -109,7 +133,10 @@ function Detail() {
     const isChild = confirmDeleteModal.isChild;
     try {
       await axiosClient.delete(
-        `comments/${commentId}?isChild=${isChild ? true : false}`
+        `comments/${commentId}?isChild=${isChild ? true : false}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
       );
       setNewComment(!newComment);
       setConfirmDeleteModal(null);
@@ -253,7 +280,11 @@ function Detail() {
                     <Link to={`/user/${post.author._id}`}>
                       <h4 className="author">{post.author.username}</h4>
                     </Link>
-                    <p className="followers">10k followers</p>
+                    <p className="followers">
+                      {post.author.followers === 0
+                        ? "No one follow yet"
+                        : `${post.author.followers} followers`}
+                    </p>
                   </div>
                 </div>
                 {user && user._id !== post.author._id && (

@@ -4,6 +4,7 @@ const initialState = {
   user: null,
   isFetching: false,
   token: null,
+  rememberMe: false,
 };
 
 const userSlice = createSlice({
@@ -28,10 +29,13 @@ const userSlice = createSlice({
       state.user = null;
       state.token = null;
     },
+    setRememberMe: (state, action) => {
+      state.rememberMe = action.payload;
+    },
   },
 });
 
-export const { loginStart, loginSuccess, loginFailure, logout } =
+export const { loginStart, loginSuccess, loginFailure, logout, setRememberMe } =
   userSlice.actions;
 
 export default userSlice.reducer;

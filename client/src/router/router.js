@@ -1,7 +1,12 @@
 import { Routes, Route } from "react-router-dom";
 import DefaultLayout from "../components/layout/defaultLayout";
 import { Fragment } from "react";
-import { ProtectedRoute, IsAuth } from "../ultils/ProtectedRout";
+import {
+  ProtectedRoute,
+  IsAuth,
+  IsResetPassword,
+  IsVerifyOTP,
+} from "../ultils/ProtectedRout";
 import { lazy } from "react";
 // Use lazy to download component when user need it (avoid download all at the same time);
 
@@ -11,10 +16,17 @@ const User = lazy(() => import("../pages/user/User"));
 const Follow = lazy(() => import("../pages/follow/Follow"));
 const Upload = lazy(() => import("../pages/upload/Upload"));
 const Login = lazy(() => import("../pages/auth/loginPage/Login"));
+const Register = lazy(() => import("../pages/auth/registerPage/Register"));
+const ForgetPassword = lazy(() =>
+  import("../pages/auth/forgetPassword/ForgetPassword")
+);
+const ResetPassword = lazy(() =>
+  import("../pages/auth/resetPassword/ResetPassword")
+);
+const NotFound = lazy(() => import("../pages/notFound/NotFound"));
 const ProfileSetting = lazy(() =>
   import("../pages/profileSetting/ProfileSetting")
 );
-const Register = lazy(() => import("../pages/auth/registerPage/Register"));
 
 const routes = [
   {
@@ -79,6 +91,35 @@ const routes = [
         <Register />
       </IsAuth>
     ),
+    layout: "Blank",
+  },
+  {
+    path: "/recoverPassword",
+    element: (
+      <IsAuth>
+        <IsResetPassword>
+          <ForgetPassword />
+        </IsResetPassword>
+      </IsAuth>
+    ),
+    layout: "Blank",
+  },
+  {
+    path: "/resetPassword",
+    element: (
+      <IsAuth>
+        <IsResetPassword>
+          <IsVerifyOTP>
+            <ResetPassword />
+          </IsVerifyOTP>
+        </IsResetPassword>
+      </IsAuth>
+    ),
+    layout: "Blank",
+  },
+  {
+    path: "*",
+    element: <NotFound />,
     layout: "Blank",
   },
 ];

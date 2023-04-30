@@ -86,7 +86,7 @@ function Register() {
                 onChange={changeCredentials}
                 focused={focused.toString()}
               />
-              <span>First Name must have minimum of 3 characters.</span>
+              <span>Minimum of 3 characters.</span>
             </div>
             <div>
               {" "}
@@ -102,7 +102,7 @@ function Register() {
                 onChange={changeCredentials}
                 focused={focused.toString()}
               />
-              <span>Last Name must have minimum of 3 characters.</span>
+              <span>Minimum of 3 characters.</span>
             </div>
             <div>
               {" "}
@@ -118,7 +118,7 @@ function Register() {
                 onChange={changeCredentials}
                 focused={focused.toString()}
               />
-              <span>Username must have minumum of 5 characters.</span>
+              <span>Minumum of 5 characters.</span>
             </div>
             <div>
               {" "}
@@ -156,7 +156,7 @@ function Register() {
                   onClick={handleVisible}
                 />
                 <span className={`passErr`}>
-                  Minimum of 8 characters, at least 1 letter,1 number
+                  Min of 8 characters, at least 1 letter,1 number
                 </span>
               </div>
             </div>
@@ -181,7 +181,7 @@ function Register() {
                   icon={confirmPassVisible ? faEyeSlash : faEye}
                   onClick={handleVisibleConfirm}
                 />
-                <span className={`passErr`}>Password not match</span>
+                <span>Password not match</span>
               </div>
             </div>
 

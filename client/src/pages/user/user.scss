@@ -1,6 +1,9 @@
 @use "../../sass/" as *;
 
 .userPage {
+  @include mobile {
+    margin-bottom: 58px;
+  }
   .user {
     display: flex;
     flex-direction: column;
@@ -11,7 +14,7 @@
     .user-avatar {
       width: 150px;
       height: 150px;
-      img {
+      .user-avatar-img {
         width: 100%;
         height: 100%;
         border-radius: 50%;
@@ -54,6 +57,10 @@
         margin-bottom: 10px;
       }
 
+      .followers {
+        cursor: default;
+      }
+
       .user-actions {
         button {
           padding: 10px 15px;
@@ -88,9 +95,6 @@
 
         .btn-created {
           margin-right: 10px;
-        }
-
-        .btn-saved {
         }
       }
     }

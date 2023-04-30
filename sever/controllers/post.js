@@ -87,9 +87,12 @@ const detail = async (req, res) => {
 };
 
 const createPost = async (req, res) => {
-  const { userId } = req.params;
+  const { id: userId } = req.user;
   const post = req.body;
   try {
+    if (!req.file) {
+      res.status(500).json({ msg: "Cannot create post without Image" });
+    }
     const category = await Category.findOne({ category: post.category });
     const img = {
       url: req.file.path,

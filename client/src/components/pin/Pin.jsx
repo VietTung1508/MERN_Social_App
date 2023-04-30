@@ -3,23 +3,14 @@ import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
 import { useState, useEffect } from "react";
-import { useSelector } from "react-redux";
 import axiosClient from "../../api/axiosClient";
 
 function Pin(props) {
   const pin = props.data;
   const savedPin = props.savedPin;
   const refData = props.refData;
+  const currentUser = props.currentUser;
   const [isSaved, setIsSaved] = useState(false);
-  const currentUser = useSelector((state) => {
-    if (state.user.user === null) {
-      return state.user.user;
-    } else if (state.user.user !== null && !state.user.user.user) {
-      return state.user.user;
-    } else {
-      return state.user.user.user;
-    }
-  });
 
   useEffect(() => {
     if (savedPin && pin) {
@@ -53,11 +44,32 @@ function Pin(props) {
       </div>
       <Link to={`/posts/${pin._id}`}>
         <img src={pin.image.url} alt="" className="pin__img" loading="lazy" />
-
-        <h4 className="pin__info">
-          {pin.title} - {pin.author.username}
-        </h4>
       </Link>
+
+      <div className="pin__info">
+        <Link to={`/user/${pin.author._id}`}>
+          {pin.author.avatar ? (
+            <div className="pin-user">
+              <div className="pin-user-avatar">
+                <img src={pin.author.avatar.url} alt="" draggable="false" />
+              </div>
+              <h5 className="pin-user-username">{pin.author.username}</h5>
+            </div>
+          ) : (
+            <div className="pin-user">
+              <div className="pin-user-anonymous-avatar">
+                <span>{pin.author.username[0].toUpperCase()}</span>
+              </div>
+              <h5 className="pin-user-username">{pin.author.username}</h5>
+            </div>
+          )}
+        </Link>
+        {pin.title.length > 7 ? (
+          <h4 className="pin-title">- {pin.title.slice(0, 6)}...</h4>
+        ) : (
+          <h4 className="pin-title">- {pin.title}</h4>
+        )}
+      </div>
     </div>
   );
 }

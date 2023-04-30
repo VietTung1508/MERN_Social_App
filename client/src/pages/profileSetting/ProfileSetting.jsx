@@ -4,19 +4,43 @@ import { useSelector } from "react-redux";
 import axios from "axios";
 import Loading from "../loading/Loading";
 import { loginStart, loginSuccess, loginFailure } from "../../redux/userSlice";
+import {
+  tempLoginStart,
+  tempLoginSuccess,
+  tempLoginFailure,
+} from "../../redux/tempUserSlice";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
 function ProfileSetting() {
+  const rememberMe = useSelector((state) => state.user.rememberMe);
   const user = useSelector((state) => {
-    if (state.user.user === null) {
-      return state.user.user;
-    } else if (state.user.user !== null && !state.user.user.user) {
-      return state.user.user;
+    if (rememberMe) {
+      if (state.user.user === null) {
+        return state.user.user;
+      } else if (state.user.user !== null && !state.user.user.user) {
+        return state.user.user;
+      } else {
+        return state.user.user.user;
+      }
     } else {
-      return state.user.user.user;
+      if (state.tempUser.user === null) {
+        return state.tempUser.user;
+      } else if (state.tempUser.user !== null && !state.tempUser.user.user) {
+        return state.tempUser.user;
+      } else {
+        return state.tempUser.user.user;
+      }
     }
   });
+  const token = useSelector((state) => {
+    if (rememberMe) {
+      return state.user.token;
+    } else {
+      return state.tempUser.token;
+    }
+  });
+
   const [tempAvatar, setTempAvatar] = useState(null);
   const [inpValue, setInpValue] = useState({
     firstname: user.firstname,
@@ -61,7 +85,11 @@ function ProfileSetting() {
   const handleEditProfile = async (e) => {
     e.preventDefault();
     setIsUpdating(true);
-    dispatch(loginStart);
+    if (rememberMe) {
+      dispatch(loginStart);
+    } else {
+      dispatch(tempLoginStart);
+    }
     try {
       const data = new FormData();
       data.append("firstname", inpValue.firstname);
@@ -71,19 +99,28 @@ function ProfileSetting() {
       tempAvatar && data.append("avatar", inpValue.avatar);
 
       const res = await axios.put(
-        `http://localhost:5000/users/${user._id}`,
+        `https://memories-api.onrender.com/users/`,
         data,
         {
           "content-type": "multipart/form-data",
+          headers: { Authorization: `Bearer ${token}` },
         }
       );
       setIsUpdating(false);
-      dispatch(loginSuccess({ user: res.data, token: user.accessToken }));
+      if (rememberMe) {
+        dispatch(loginSuccess({ user: res.data, token }));
+      } else {
+        dispatch(tempLoginSuccess({ user: res.data, token }));
+      }
       navigate(`/user/${user._id}`);
     } catch (e) {
       console.log(e);
       setIsUpdating(false);
-      dispatch(loginFailure);
+      if (rememberMe) {
+        dispatch(loginFailure);
+      } else {
+        dispatch(tempLoginFailure);
+      }
     }
   };
 

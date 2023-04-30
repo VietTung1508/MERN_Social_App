@@ -6,7 +6,6 @@
   display: flex;
   align-items: flex-start;
   gap: 8px;
-
   &__avatar {
     width: 40px;
     height: 40px;
@@ -69,6 +68,11 @@
         .icon-heart,
         .icon-heartless {
           cursor: pointer;
+          color: rgba(255, 255, 255, 0.7);
+        }
+
+        .icon-heartless-noUser {
+          position: relative;
         }
 
         .icon-heart {
@@ -85,8 +89,8 @@
         .actions-list {
           display: none;
           position: absolute;
-          top: 100%;
-          left: -350%;
+          top: 20px;
+          right: 0;
           background-color: black;
           padding: 0.7rem;
           border-radius: 7px;
