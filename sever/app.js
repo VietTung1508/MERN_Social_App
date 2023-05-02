@@ -6,11 +6,17 @@ const path = require("path");
 const connectDb = require("./db.js");
 const cors = require("cors");
 
+var corsOptions = {
+  credential: true,
+  allowOrigin: ["https://memories-dd4k.onrender.com"],
+  optionsSuccessStatus: 200,
+};
+
 app.use(express.static(path.join(__dirname, "public")));
 app.use("/images", express.static("images"));
 app.use(express.json());
 app.use(express.urlencoded({ extends: true }));
-app.use(cors());
+app.use(cors(corsOptions));
 
 router(app);
 
